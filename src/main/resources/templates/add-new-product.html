@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<title>Add New Product</title>
+	<style type="text/css">
+		body {
+		    font-family: Arial, sans-serif;
+		    background-color: #f4f4f9;
+		    color: #333;
+		    text-align: center;
+		    margin: 0;
+		    padding: 20px;
+		}
+		
+		h1, h2 {
+		    color: #5a5a5a;
+		}
+		
+		form {
+		    width: 50%;
+		    margin: 20px auto;
+		    background: #fff;
+		    padding: 20px;
+		    border-radius: 8px;
+		    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		    text-align: left;
+		}
+		
+		label {
+		    font-size: 16px;
+		    font-weight: bold;
+		    display: block;
+		    margin-top: 10px;
+		    color: #444;
+		}
+		
+		input, select, textarea {
+		    width: 100%;
+		    padding: 10px;
+		    margin-top: 5px;
+		    border: 1px solid #ddd;
+		    border-radius: 5px;
+		    font-size: 16px;
+		}
+		
+		button {
+		    background-color: #6272a4;
+		    color: white;
+		    border: none;
+		    padding: 12px 20px;
+		    font-size: 18px;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    margin-top: 15px;
+		    width: 100%;
+		}
+		
+		button:hover {
+		    background-color: #515d9c;
+		}
+		
+		.error {
+		    color: red;
+		    font-size: 14px;
+		}
+				
+	</style>
+</head>
+<body>
+<form th:action="@{/products/addNewProduct}" th:object="${product}" method="post">
+    
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" th:field="*{name}" required>
+    <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+    <br>
+    
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" th:field="*{price}" required step="0.01" min="1">
+    <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+    <br>
+    
+    <button type="submit">Add Product</button>
+</form>
+</body>
+</html>
