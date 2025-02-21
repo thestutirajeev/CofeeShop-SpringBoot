@@ -1,47 +1,60 @@
 package com.CofeeShop.controller;
 
 import com.CofeeShop.model.*;
+import com.CofeeShop.service.ProductService;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.CofeeShop.model.Product;
+import org.springframework.web.bind.annotation.*;
+
 @Controller
-@RequestMapping("/products") // This means all URLs start with http://localhost:8082/products/
+@RequestMapping("/products")
 public class ProductController {
 
-    private List<Product> productsList = List.of(
-        new Product(1, "Espresso", 2.50),
-        new Product(2, "Latte", 3.50),
-        new Product(3, "Croissant", 2.00),
-        new Product(4, "Chocolate Muffin", 2.25),
-        new Product(5, "Americano", 2.75)
-    );
+    @Autowired
+    private ProductService productService;
 
-    @RequestMapping("/") // This maps to the URL http://localhost:8082/products/
-    @ResponseBody
-    public String home() {
-        return "Welcome to the Coffee Shop!";
+    @GetMapping("/") 
+    public String viewHomePage(Model model) {
+        model.addAttribute("listProducts", productService.getAllProducts());
+        return "menu";  // Thymeleaf template
     }
 
-    @RequestMapping("/list") // This maps to the URL http://localhost:8082/products/list
-    public String listProducts(Model productListModel) { // Model argument is used to pass data to the view
-        productListModel.addAttribute("products", productsList); // Add the productsList to the model
-        return "menu";  // This returns the view name, that is, the JSP file name
+    @GetMapping("/list") 
+    public String listProducts(Model model) {
+        model.addAttribute("listProducts", productService.getAllProducts());
+        return "menu";
     }
 
-    @RequestMapping("/details/{id}") // This maps to the URL http://localhost:8082/products/details/{id}
+    /*
+    @GetMapping("/details/{id}")
     @ResponseBody
-    public String getProductDetailsByID(@PathVariable int id){
-        for (Product product : productsList) {
-            if (product.getId() == id) {
-                return "<strong>Requested Product Details: </strong> <hr> Product ID: " + product.getId() + "<br> Name: " + product.getName() + "<br> Price: $" + product.getPrice();
-            }
-        }
-        return "Product not found!";
+    public String getProductDetailsByID(@PathVariable Long id) {
+        return productService.getProductById(id)
+                .map(product -> "<strong>Requested Product Details: </strong> <hr> Product ID: " 
+                        + product.getId() + "<br> Name: " + product.getName() + "<br> Price: $" + product.getPrice())
+                .orElse("Product not found!");
+    }*/
+
+    @GetMapping("/add")
+    public String showProductForm(Model model) {
+        model.addAttribute("product", new Product());
+        return "add-new-product";
+    }
+
+    @PostMapping("/addNewProduct")
+    public String addProduct(@ModelAttribute Product product) {
+        productService.saveProduct(product);
+        return "redirect:/products/list";
     }
 }
